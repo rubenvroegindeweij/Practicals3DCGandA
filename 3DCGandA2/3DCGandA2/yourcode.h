@@ -95,10 +95,17 @@ Vec3Df debugColor(unsigned int index)
 ///Shading
 ///////////////
 //standard lambertian shading: Kd * dot(N,L), clamped to zero when negative. Where L is the light vector
+//Lambertian Model: https://en.wikipedia.org/wiki/Lambertian_reflectance.
 //
 Vec3Df diffuseOnly(const Vec3Df & vertexPos, Vec3Df & normal, const Vec3Df & lightPos, unsigned int index)
 {	
-	return Vec3Df(1,0,0);
+	Vec3Df N = normal;
+	Vec3Df L = lightPos - vertexPos;
+	L = L / L.normalize();
+	float dotProd = Vec3Df::dotProduct(N, L);
+	dotProd = (dotProd > 0) ? dotProd : 0;
+	//cout << "Info: " << dotProd << endl;
+	return Vec3Df(dotProd, dotProd, dotProd);
 }
 
 
