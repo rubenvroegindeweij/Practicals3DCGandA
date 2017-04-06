@@ -102,10 +102,11 @@ Vec3Df diffuseOnly(const Vec3Df & vertexPos, Vec3Df & normal, const Vec3Df & lig
 	Vec3Df N = normal;
 	Vec3Df L = lightPos - vertexPos;
 	L = L / L.normalize();
-	float dotProd = Vec3Df::dotProduct(N, L);
-	dotProd = (dotProd > 0) ? dotProd : 0;
-	//cout << "Info: " << dotProd << endl;
-	return Vec3Df(dotProd, dotProd, dotProd);
+	float NdotL = Vec3Df::dotProduct(N, L);
+	NdotL = (NdotL > 0) ? NdotL : 0;
+	Vec3Df I = NdotL*Kd[index];
+	//cout << "Info: " << NdotL << endl;
+	return I;
 }
 
 
@@ -124,7 +125,17 @@ Vec3Df phongSpecularOnly(const Vec3Df & vertexPos, Vec3Df & normal, const Vec3Df
 //The same test as before should be used
 Vec3Df blinnPhongSpecularOnly(const Vec3Df & vertexPos, Vec3Df & normal, const Vec3Df & lightPos, const Vec3Df & cameraPos, unsigned int index)
 {
-	return Vec3Df(0,0,1);
+	Vec3Df N = normal;
+	Vec3Df L = lightPos - vertexPos;
+	L = L / L.normalize();
+	Vec3Df V = cameraPos - vertexPos;
+	V = V / V.normalize();
+	Vec3Df H = L + V;
+	H = H / (L.normalize() + V.normalize());
+	float NdotH = Vec3Df::dotProduct(N, H);
+	NdotH = (NdotH > 0) ? NdotH : 0;
+	Vec3Df Ip = Ks[index]*pow(NdotH, Shininess[index]);
+	return Vec3Df(Ip[0],Ip[1],Ip[2]);
 }
 
 
